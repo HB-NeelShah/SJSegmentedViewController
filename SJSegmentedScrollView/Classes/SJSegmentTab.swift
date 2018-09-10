@@ -28,7 +28,13 @@ open class SJSegmentTab: UIView {
 
 	let kSegmentViewTagOffset = 100
 	let button = UIButton(type: .custom)
-
+	var buttonOffSet: CGFloat?{
+		didSet{
+			button.titleEdgeInsets = UIEdgeInsetsMake(buttonOffSet!, 0, 0, 0)
+		}
+	}
+	
+	
 	var didSelectSegmentAtIndex: DidSelectSegmentAtIndex?
 	var isSelected = false {
 		didSet {
@@ -59,6 +65,8 @@ open class SJSegmentTab: UIView {
 		addSubview(button)
 		addConstraintsToView(button)
 	}
+	
+	
 
 	func addConstraintsToView(_ view: UIView) {
 
@@ -88,11 +96,6 @@ open class SJSegmentTab: UIView {
 
 		button.setTitleColor(color, for: .normal)
 	}
-    
-    open func selectedTitleColor(_ color: UIColor?) {
-        
-        button.setTitleColor(color, for: .selected)
-    }
 
 	open func titleFont(_ font: UIFont) {
 

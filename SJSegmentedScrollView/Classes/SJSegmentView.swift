@@ -38,14 +38,6 @@ class SJSegmentView: UIScrollView {
         }
     }
     
-    var selectedTitleColor: UIColor? {
-        didSet {
-            for segment in segments {
-                segment.selectedTitleColor(selectedTitleColor)
-            }
-        }
-    }
-    
     var segmentBackgroundColor: UIColor? {
         didSet {
             for segment in segments {
@@ -69,7 +61,7 @@ class SJSegmentView: UIScrollView {
     var font: UIFont?
     var selectedSegmentViewHeight: CGFloat?
     let kSegmentViewTagOffset = 100
-    var segmentViewOffsetWidth: CGFloat = 10.0
+    var segmentViewOffsetWidth: CGFloat = 0.0
     var segments = [SJSegmentTab]()
     var segmentContentView: UIView?
     var didSelectSegmentAtIndex: DidSelectSegmentAtIndex?
@@ -79,6 +71,7 @@ class SJSegmentView: UIScrollView {
     var selectedSegmentViewWidthConstraint: NSLayoutConstraint?
     var contentSubViewWidthConstraints = [NSLayoutConstraint]()
 	var controllers: [UIViewController]?
+	var tabButtonOffSet: CGFloat = 0.0
     
     var contentView: SJContentView? {
         didSet {
@@ -258,6 +251,21 @@ class SJSegmentView: UIScrollView {
                                                                                  metrics: ["height": selectedSegmentViewHeight!],
                                                                                  views: ["view": segmentView])
         segmentContentView!.addConstraints(verticalConstraints)
+		
+//		let constraintButtonPlayWidth = NSLayoutConstraint (item: segmentView,
+//															attribute: NSLayoutAttribute.width,
+//															relatedBy: NSLayoutRelation.equal,
+//														toItem: nil,
+//														attribute: NSLayoutAttribute.notAnAttribute,
+//														multiplier: 1,
+//														constant: 20)
+//
+//		segmentContentView!.addConstraint(constraintButtonPlayWidth)
+//
+//		let xConstraint = NSLayoutConstraint(item: segmentView, attribute: .centerX, relatedBy: .equal, toItem: segment!, attribute: .centerX, multiplier: 1, constant: 0)
+//
+//
+//		segmentContentView!.addConstraint(xConstraint)
     }
     
     func getSegmentTabForController(_ controller: UIViewController) -> SJSegmentTab {
@@ -273,10 +281,9 @@ class SJSegmentView: UIScrollView {
 			} else {
 				segmentTab = SJSegmentTab.init(title: "")
 			}
-
+			segmentTab?.buttonOffSet = tabButtonOffSet
 			segmentTab?.backgroundColor = segmentBackgroundColor
 			segmentTab?.titleColor(titleColor!)
-            segmentTab?.selectedTitleColor(selectedTitleColor!)
 			segmentTab?.titleFont(font!)
 		}
 

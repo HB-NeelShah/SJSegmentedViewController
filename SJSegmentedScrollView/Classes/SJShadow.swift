@@ -54,9 +54,9 @@ import UIKit
      - returns: light SJShadow object
      */
     open class func light() -> SJShadow {
-        return SJShadow(offset: CGSize(width: 0, height: 1),
+        return SJShadow(offset: CGSize(width: 0, height: 2),
                         color: UIColor.lightGray,
-                        radius: 3.0,
+                        radius: 1.0,
                         opacity: 0.4)
     }
     

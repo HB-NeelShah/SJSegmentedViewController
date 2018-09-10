@@ -81,6 +81,12 @@ import UIKit
             segmentedScrollView.segmentViewHeight = segmentViewHeight
         }
     }
+	
+	open var tabButtonOffset: CGFloat = 0.0{
+		didSet{
+			segmentedScrollView.tabButtonOffSet = tabButtonOffset
+		}
+	}
     
     /**
      *  Set headerview offset height.
@@ -131,19 +137,6 @@ import UIKit
     open var segmentTitleColor = UIColor.black {
         didSet {
             segmentedScrollView.segmentTitleColor = segmentTitleColor
-        }
-    }
-    
-    /**
-     *  Set color for segment title.
-     *
-     *  By default the color is black.
-     *
-     *  segmentedViewController.segmentTitleColor = UIColor.redColor()
-     */
-    open var segmentSelectedTitleColor = UIColor.black {
-        didSet {
-            segmentedScrollView.segmentSelectedTitleColor = segmentSelectedTitleColor
         }
     }
     
@@ -267,21 +260,9 @@ import UIKit
 			segmentedScrollView.sjShowsHorizontalScrollIndicator = showsHorizontalScrollIndicator
 		}
 	}
-    
-    /**
-     *  Disable scroll on contentView.
-     *
-     *  By default false.
-     *
-     *  segmentedScrollView.disableScrollOnContentView = true
-     */
-    open var disableScrollOnContentView: Bool = false {
-        didSet {
-            segmentedScrollView.sjDisableScrollOnContentView = disableScrollOnContentView
-        }
-    }
-    
+
     open weak var delegate:SJSegmentedViewControllerDelegate?
+    var viewObservers = [UIView]()
     var segmentedScrollView = SJSegmentedScrollView(frame: CGRect.zero)
     var segmentScrollViewTopConstraint: NSLayoutConstraint?
     
@@ -293,9 +274,9 @@ import UIKit
      - parameter segmentControllers:   Array of UIViewControllers for segments.
      
      */
-    required public init(headerViewController: UIViewController?,
+    convenience public init(headerViewController: UIViewController?,
                             segmentControllers: [UIViewController]) {
-        super.init(nibName: nil, bundle: nil)
+        self.init(nibName: nil, bundle: nil)
         self.headerViewController = headerViewController
         self.segmentControllers = segmentControllers
         setDefaultValuesToSegmentedScrollView()
@@ -307,6 +288,14 @@ import UIKit
     
     required public init?(coder aDecoder: NSCoder) {
 		super.init(coder: aDecoder)
+    }
+    
+    deinit {
+        for view in viewObservers {
+            view.removeObserver(segmentedScrollView,
+                                forKeyPath: "contentOffset",
+                                context: nil)
+        }
     }
     
     override open func loadView() {
@@ -363,7 +352,6 @@ import UIKit
         segmentedScrollView.selectedSegmentViewColor    = selectedSegmentViewColor
         segmentedScrollView.selectedSegmentViewHeight   = selectedSegmentViewHeight
         segmentedScrollView.segmentTitleColor           = segmentTitleColor
-        segmentedScrollView.segmentSelectedTitleColor   = segmentSelectedTitleColor
         segmentedScrollView.segmentBackgroundColor      = segmentBackgroundColor
         segmentedScrollView.segmentShadow               = segmentShadow
         segmentedScrollView.segmentTitleFont            = segmentTitleFont
@@ -372,7 +360,6 @@ import UIKit
         segmentedScrollView.headerViewOffsetHeight      = headerViewOffsetHeight
         segmentedScrollView.segmentViewHeight           = segmentViewHeight
         segmentedScrollView.backgroundColor             = segmentedScrollViewColor
-        segmentedScrollView.sjDisableScrollOnContentView = disableScrollOnContentView
     }
     
     /**
@@ -438,6 +425,8 @@ import UIKit
      - parameter contentControllers: array of ViewControllers
      */
     func addContentControllers(_ contentControllers: [UIViewController]) {
+        
+        viewObservers.removeAll()
         segmentedScrollView.addSegmentView(contentControllers, frame: view.bounds)
         
         var index = 0
@@ -458,6 +447,7 @@ import UIKit
                 observeView = view
             }
 
+            viewObservers.append(observeView!)
             segmentedScrollView.addObserverFor(observeView!)
             index += 1
         }
